@@ -13,6 +13,8 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 │       │   └── decypharr.sh
 │       └── install/
 │           └── decypharr-install.sh
+├── bootstrap/
+│   └── decypharr.sh
 ├── docs/
 │   ├── conventions.md
 │   └── structure.md
@@ -35,6 +37,7 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 - Centralize reusable shell logic under `lib/`
 - Make the repository easy to browse and extend
 - Minimize copy/paste when adding new LXC installers
+- Preserve simple `curl | bash` entrypoints via `bootstrap/`
 
 ## Current apps
 
@@ -45,8 +48,10 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 Run from a Proxmox VE shell:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/decypharr/ct/decypharr.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"
 ```
+
+The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
 
 ## Next app workflow
 
@@ -56,4 +61,7 @@ Use the scaffold helper:
 tools/new-app.sh myapp
 ```
 
-Then fill in the generated files under `apps/myapp/`.
+Then either:
+
+1. fill in the generated files under `apps/myapp/`
+2. add a matching `bootstrap/myapp.sh` entrypoint for one-line installs

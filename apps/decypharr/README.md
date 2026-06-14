@@ -4,15 +4,15 @@ Standalone Proxmox VE helper script for installing [Decypharr](https://github.co
 
 ## Files
 
-- `ct/decypharr.sh` — host-side LXC creation entrypoint
+- `ct/decypharr.sh` — host-side LXC creation entrypoint used by the bootstrap loader
 - `install/decypharr-install.sh` — in-container installer and service setup
 
 ## Usage
 
-Run the one-liner below from a Proxmox VE shell:
+Run the bootstrap one-liner below from a Proxmox VE shell:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/decypharr/ct/decypharr.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"
 ```
 
 ## Defaults
