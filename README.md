@@ -58,7 +58,15 @@ The bootstrap script downloads the shared library files plus the Decypharr app e
 Use the scaffold helper:
 
 ```bash
-tools/new-app.sh myapp
+tools/new-app.sh <app-slug> [display-title] [port] [upstream-repo] [update-support]
+```
+
+Examples:
+
+```bash
+tools/new-app.sh radarr
+tools/new-app.sh qbittorrent qBittorrent 8080 qbittorrent/qBittorrent true
+tools/new-app.sh customapp "Custom App" 9000 owner/repo false
 ```
 
 It creates:
@@ -70,4 +78,10 @@ apps/myapp/install/myapp-install.sh
 bootstrap/myapp.sh
 ```
 
-The generated files are prefilled with the app name so you can start editing immediately.
+The generated files are prefilled with:
+
+- app slug
+- display title
+- default port
+- upstream GitHub repo
+- optional update-helper behavior
