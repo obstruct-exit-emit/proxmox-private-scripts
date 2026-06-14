@@ -16,6 +16,7 @@ This repository is organized for fast exploration and low-friction script author
 
 3. **Templates live in `templates/`**
    - Use these as a starting point for new installers.
+   - In-container installer templates should remain runnable after being copied into a container as a single file.
 
 4. **Utility scripts live in `tools/`**
    - Scaffolding

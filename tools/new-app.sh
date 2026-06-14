@@ -58,16 +58,18 @@ Standalone Proxmox VE helper script for installing [${APP_TITLE}](https://github
 
 ## Files
 
-- `ct/${APP}.sh` — host-side LXC creation entrypoint used by the bootstrap loader
-- `install/${APP}-install.sh` — in-container installer and service setup
+- \`ct/${APP}.sh\` — host-side LXC creation entrypoint used by the bootstrap loader
+- \`install/${APP}-install.sh\` — self-contained in-container installer and service setup
 
 ## Usage
 
 Run the bootstrap one-liner below from a Proxmox VE shell:
 
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/${APP}.sh)"
-```
+\`\`\`bash
+bash -c "\$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/${APP}.sh)"
+\`\`\`
+
+The host-side script copies \`install/${APP}-install.sh\` into the container and runs it from \`/root\`, so the installer is intentionally standalone and does not source repo-relative files from \`lib/\`.
 
 ## Defaults
 
@@ -77,10 +79,10 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 | CPU | 2 cores |
 | RAM | 2048 MB |
 | Disk | 8 GB |
-| Network | DHCP on `vmbr0` |
+| Network | DHCP on \`vmbr0\` |
 | Port | ${APP_PORT} |
-| Install path | `/opt/${APP}` |
-| Upstream | `${UPSTREAM_REPO}` |
+| Install path | \`/opt/${APP}\` |
+| Upstream | \`${UPSTREAM_REPO}\` |
 | Update helper | ${UPDATE_SUPPORT} |
 EOF
 
@@ -97,13 +99,13 @@ APP="${APP_TITLE}"
 APP_SLUG="${APP}"
 APP_PORT="${APP_PORT}"
 APP_INSTALL_SCRIPT="${APP}-install.sh"
-var_tags="4{var_tags:-community}"
-var_cpu="4{var_cpu:-2}"
-var_ram="4{var_ram:-2048}"
-var_disk="4{var_disk:-8}"
-var_os="4{var_os:-debian}"
-var_version="4{var_version:-13}"
-var_unprivileged="4{var_unprivileged:-1}"
+var_tags="\${var_tags:-community}"
+var_cpu="\${var_cpu:-2}"
+var_ram="\${var_ram:-2048}"
+var_disk="\${var_disk:-8}"
+var_os="\${var_os:-debian}"
+var_version="\${var_version:-13}"
+var_unprivileged="\${var_unprivileged:-1}"
 
 SCRIPT_DIR=\$(cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)
 REPO_ROOT=\$(cd -- "\${SCRIPT_DIR}/../../.." && pwd)
@@ -197,12 +199,21 @@ INSTALL_LOG="\${INSTALL_LOG:-/root/.install-${APP_LOG_SLUG}.log}"
 mkdir -p "\$(dirname "\${INSTALL_LOG}")"
 log() { echo "[\$(date '+%Y-%m-%d %H:%M:%S')] \$*" >> "\${INSTALL_LOG}"; }
 
-SCRIPT_DIR=\$(cd -- "\$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)
-REPO_ROOT=\$(cd -- "\${SCRIPT_DIR}/../../.." && pwd)
-# shellcheck source=lib/output.sh
-source "\${REPO_ROOT}/lib/output.sh"
-# shellcheck source=lib/github.sh
-source "\${REPO_ROOT}/lib/github.sh"
+YW=\$(printf '\\033[33m')
+GN=\$(printf '\\033[1;92m')
+RD=\$(printf '\\033[01;31m')
+CL=\$(printf '\\033[m')
+BFR='\\r\\033[K'
+TAB='  '
+CM="\${TAB}✔️\${TAB}"
+CROSS="\${TAB}✖️\${TAB}"
+
+msg_info()  { printf '%b\\n' "\${TAB}\${YW}◌\${CL} \${1}..."; }
+msg_ok()    { printf "\${BFR}\${CM}\${GN}%s\${CL}\\n" "\${1}"; }
+msg_error() { printf "\${BFR}\${CROSS}\${RD}%s\${CL}\\n" "\${1}"; exit 1; }
+
+# Keep install scripts self-contained. If you need shared helper behavior here,
+# inline the small function or explicitly fetch/copy the dependency into the container.
 
 export DEBIAN_FRONTEND=noninteractive
 export LANG=C.UTF-8

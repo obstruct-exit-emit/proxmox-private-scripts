@@ -12,12 +12,31 @@ INSTALL_LOG="${INSTALL_LOG:-/root/.install-decypharr.log}"
 mkdir -p "$(dirname "$INSTALL_LOG")"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$INSTALL_LOG"; }
 
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-REPO_ROOT=$(cd -- "${SCRIPT_DIR}/../../.." && pwd)
-# shellcheck source=lib/output.sh
-source "${REPO_ROOT}/lib/output.sh"
-# shellcheck source=lib/github.sh
-source "${REPO_ROOT}/lib/github.sh"
+YW=$(printf '\033[33m')
+GN=$(printf '\033[1;92m')
+RD=$(printf '\033[01;31m')
+CL=$(printf '\033[m')
+BFR='\r\033[K'
+TAB='  '
+CM="${TAB}✔️${TAB}"
+CROSS="${TAB}✖️${TAB}"
+
+msg_info()  { printf '%b\n' "${TAB}${YW}◌${CL} ${1}..."; }
+msg_ok()    { printf "${BFR}${CM}${GN}%s${CL}\n" "${1}"; }
+msg_error() { printf "${BFR}${CROSS}${RD}%s${CL}\n" "${1}"; exit 1; }
+
+download_first_working_asset() {
+  local destination="$1"
+  shift
+  local url
+  for url in "$@"; do
+    if curl -fsSLI --location "$url" >/dev/null 2>&1; then
+      curl -fsSL --location "$url" -o "$destination"
+      return 0
+    fi
+  done
+  return 1
+}
 
 export DEBIAN_FRONTEND=noninteractive
 export LANG=C.UTF-8
@@ -130,5 +149,6 @@ printf '%s\n' \
   'bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"' \
   >/usr/bin/update
 chmod +x /usr/bin/update
+msg_ok "Installed update helper"
 
 msg_ok "Decypharr installation complete"

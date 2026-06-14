@@ -38,6 +38,7 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 - Make the repository easy to browse and extend
 - Minimize copy/paste when adding new LXC installers
 - Preserve simple `curl | bash` entrypoints via `bootstrap/`
+- Ensure in-container installers can run as standalone scripts after being copied into a container
 
 ## Current apps
 
@@ -52,6 +53,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 ```
 
 The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
+
+The host-side entrypoint may copy a single install script into the container, so every file under `apps/<app>/install/` must be self-contained and must not depend on repo-relative `lib/` paths being present inside the container.
 
 ## Scaffolding a new app
 
@@ -85,3 +88,4 @@ The generated files are prefilled with:
 - default port
 - upstream GitHub repo
 - optional update-helper behavior
+- a standalone in-container installer pattern that avoids repo-relative library dependencies
