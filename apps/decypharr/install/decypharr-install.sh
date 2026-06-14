@@ -127,7 +127,7 @@ msg_ok "Service enabled and started"
 
 printf '%s\n' \
   '#!/usr/bin/env bash' \
-  'bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/decypharr/ct/decypharr.sh)"' \
+  'bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"' \
   >/usr/bin/update
 chmod +x /usr/bin/update
 

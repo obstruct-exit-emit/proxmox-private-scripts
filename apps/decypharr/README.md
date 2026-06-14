@@ -26,3 +26,5 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 | Network | DHCP on `vmbr0` |
 | Port | 8282 |
 | Install path | `/opt/decypharr` |
+| Upstream | `sirrobot01/decypharr` |
+| Update helper | true |
