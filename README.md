@@ -53,7 +53,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 
 The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
 
-## Next app workflow
+## Scaffolding a new app
 
 Use the scaffold helper:
 
@@ -61,7 +61,13 @@ Use the scaffold helper:
 tools/new-app.sh myapp
 ```
 
-Then either:
+It creates:
 
-1. fill in the generated files under `apps/myapp/`
-2. add a matching `bootstrap/myapp.sh` entrypoint for one-line installs
+```text
+apps/myapp/README.md
+apps/myapp/ct/myapp.sh
+apps/myapp/install/myapp-install.sh
+bootstrap/myapp.sh
+```
+
+The generated files are prefilled with the app name so you can start editing immediately.
