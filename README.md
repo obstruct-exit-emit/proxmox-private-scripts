@@ -52,6 +52,10 @@ Run from a Proxmox VE shell:
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"
 ```
 
+```bash
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap-jd2-pia.sh)"
+```
+
 The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
 
 The host-side entrypoint may copy a single install script into the container, so every file under `apps/<app>/install/` must be self-contained and must not depend on repo-relative `lib/` paths being present inside the container.
