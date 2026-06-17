@@ -1,44 +1,26 @@
 #!/usr/bin/env bash
 
-# Header matching your standard format
-echo "--> Starting Bootstrap for JDownloader2 and PIA..."
+# 1. Define Container Settings
+CTID=300 # Change to your preferred ID
+TEMPLATE="debian-12-standard_12.2-1_amd64.tar.zst"
+CT_NAME="jd2-pia-container"
 
-# Ensure we are running as root
-if [ "$EUID" -ne 0 ]; then 
-  echo "Please run as root"
-  exit
-fi
+echo "--> Creating LXC container $CTID..."
 
-# 1. Setup JDownloader2
-echo "--> Installing JDownloader2..."
-apt-get update -y && apt-get install -y openjdk-17-jre-headless
-useradd -r -m -d /opt/jdownloader2 -s /usr/sbin/nologin jd2
-wget -qO /opt/jdownloader2/JDownloader.jar http://installer.jdownloader.org/JDownloader.jar
-chown -R jd2:jd2 /opt/jdownloader2
+# 2. Create the LXC container
+pct create $CTID local:vztmpl/$TEMPLATE \
+  --hostname $CT_NAME \
+  --net0 name=eth0,bridge=vmbr0,ip=dhcp \
+  --ostype debian \
+  --cores 1 \
+  --memory 1024 \
+  --rootfs local-lvm:4
 
-# 2. Setup PIA Headless
-echo "--> Installing PIA..."
-wget -qO /tmp/pia-linux.run "https://www.privateinternetaccess.com/installer/download_installer_linux"
-chmod +x /tmp/pia-linux.run
-/tmp/pia-linux.run --accept
+# 3. Start the container
+pct start $CTID
 
-# 3. Create Systemd Service for JD2
-cat << 'EOF' > /etc/systemd/system/jdownloader2.service
-[Unit]
-Description=JDownloader2 Headless
-After=network-online.target
+# 4. Inject and run your installation script inside the container
+echo "--> Installing JD2 and PIA inside the container..."
+pct exec $CTID -- bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/jd2-pia.sh)"
 
-[Service]
-User=jd2
-WorkingDirectory=/opt/jdownloader2
-ExecStart=/usr/bin/java -jar /opt/jdownloader2/JDownloader.jar -norestart
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
-systemctl enable --now jdownloader2.service
-
-echo "--> Bootstrap Complete."
+echo "--> Done! Your container $CTID is ready."
