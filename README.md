@@ -53,7 +53,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 ```
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/bootstrap-jd2-pia.sh)"
+bash -c "$(curl -fsSL https://github.com/obstruct-exit-emit/proxmox-private-scripts/blob/main/bootstrap/jd2-pia.sh)"
 ```
 
 The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
