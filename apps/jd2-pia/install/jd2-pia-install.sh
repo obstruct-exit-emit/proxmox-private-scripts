@@ -193,7 +193,16 @@ systemctl restart jdownloader2.service
 echo "JDownloader2 restarted under the current network state."
 SCRIPT
 chmod +x /usr/local/bin/pia-setup.sh
-msg_ok "Wrote PIA connect/disconnect/setup helpers"
+
+cat <<'SCRIPT' >/usr/local/bin/pia-reconnect.sh
+#!/usr/bin/env bash
+set -uo pipefail
+echo "Reconnecting to PIA for a fresh exit IP..."
+systemctl restart pia-wireguard.service
+SCRIPT
+chmod +x /usr/local/bin/pia-reconnect.sh
+
+msg_ok "Wrote PIA connect/disconnect/setup/reconnect helpers"
 
 msg_info "Creating PIA systemd service"
 cat <<EOF >/etc/systemd/system/pia-wireguard.service
@@ -242,6 +251,38 @@ EOF
 systemctl daemon-reload
 systemctl enable -q --now jdownloader2.service
 msg_ok "JDownloader2 service enabled and started (unprotected until pia-setup.sh runs)"
+
+cat <<'SCRIPT' >/usr/local/bin/jd2-setup.sh
+#!/usr/bin/env bash
+set -uo pipefail
+
+echo "Stopping the background JDownloader2 service so we can run it attached to this console..."
+systemctl stop jdownloader2.service
+
+cd /opt/jdownloader2 || exit 1
+echo
+echo "Starting JDownloader2 in the foreground."
+echo "It may exit and relaunch a few times while it self-updates before showing the MyJDownloader login prompt — that's normal, just wait."
+echo "Once you've logged in and JDownloader2 is running normally, press Ctrl+C to hand it back to the background service."
+echo
+
+STOP=0
+trap 'STOP=1' INT
+
+while [[ "$STOP" -eq 0 ]]; do
+  java -Djava.awt.headless=true -jar JDownloader.jar -norestart
+  [[ "$STOP" -eq 1 ]] && break
+  echo "JDownloader2 exited — relaunching in 3s (press Ctrl+C now if you're already done)..."
+  sleep 3
+done
+
+echo
+echo "Restarting the managed background service..."
+systemctl start jdownloader2.service
+echo "Done. Check https://my.jdownloader.org to confirm this device shows up under My Devices."
+SCRIPT
+chmod +x /usr/local/bin/jd2-setup.sh
+msg_ok "Wrote jd2-setup.sh (run after pia-setup.sh to pair with MyJDownloader)"
 
 cat <<'SCRIPT' >/usr/local/bin/jd2-pia-update
 #!/usr/bin/env bash

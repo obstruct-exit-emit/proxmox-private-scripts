@@ -90,4 +90,4 @@ printf '%b\n' "${CREATING}${GN}${APP} setup has been successfully initialized!${
 printf '%b\n' "${INFO}${CL} JDownloader2 is running but NOT yet routed through PIA. Finish setup:"
 printf '%b\n' "${TAB}1) pct enter ${CTID}"
 printf '%b\n' "${TAB}2) pia-setup.sh   ${TAB}# one-time PIA login + first VPN connect + kill switch"
-printf '%b\n' "${TAB}3) Pair this JDownloader2 instance at https://my.jdownloader.org"
+printf '%b\n' "${TAB}3) jd2-setup.sh   ${TAB}# one-time MyJDownloader login (https://my.jdownloader.org)"

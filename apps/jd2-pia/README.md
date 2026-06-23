@@ -21,14 +21,17 @@ The host-side script copies `install/jd2-pia-install.sh` into the container and 
 
 The container's console (`pct console <CTID>`) is configured to auto-login as root, so no password is needed there either; `pct enter <CTID>` already bypasses login entirely.
 
-PIA credentials are never passed to the installer or baked into the image. Once the container is up, finish setup manually:
+Neither PIA nor MyJDownloader credentials are ever passed to the installer or baked into the image. Once the container is up, finish setup manually:
 
 ```bash
 pct enter <CTID>
 pia-setup.sh
+jd2-setup.sh
 ```
 
-`pia-setup.sh` prompts for your PIA username/password, writes them to `/etc/pia/credentials.env` (root-only), brings up the WireGuard tunnel via `run_setup.sh`, and applies the kill switch. Then pair this JDownloader2 instance at [my.jdownloader.org](https://my.jdownloader.org) (no MyJDownloader credentials are scripted either — pair it manually from the container).
+`pia-setup.sh` prompts for your PIA username/password, writes them to `/etc/pia/credentials.env` (root-only), brings up the WireGuard tunnel via `run_setup.sh`, and applies the kill switch.
+
+`jd2-setup.sh` stops the background `jdownloader2.service`, runs JDownloader2 attached to your console, and relaunches it automatically while it self-updates (this can take a few cycles) until it shows the MyJDownloader login prompt. Log in there, then press `Ctrl+C` once it's running normally — the script hands control back to the systemd-managed background service. The account binding is saved under `/opt/jdownloader2/cfg/` and persists across restarts, so this is a one-time step. JDownloader2 can't prompt for this on its own since the background service has no attached console.
 
 ## How the kill switch works
 
