@@ -135,8 +135,9 @@ read -rsp "PIA password: " PIA_PASS
 echo
 
 mkdir -p /etc/pia
-printf 'PIA_USER=%q\nPIA_PASS=%q\n' "$PIA_USER" "$PIA_PASS" >/etc/pia/credentials.env
+printf "PIA_USER='%s'\nPIA_PASS='%s'\n" "$PIA_USER" "$PIA_PASS" >/etc/pia/credentials.env
 chmod 600 /etc/pia/credentials.env
+echo "Credentials saved in plain text to /etc/pia/credentials.env (root-only, chmod 600) — review with: cat /etc/pia/credentials.env"
 
 echo "Connecting to PIA..."
 if systemctl restart pia-wireguard.service; then
