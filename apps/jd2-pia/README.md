@@ -12,8 +12,10 @@ Standalone Proxmox VE helper script for installing [JDownloader2](http://www.jdo
 Run the bootstrap one-liner below from a Proxmox VE shell:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/jd2-pia.sh)"
+bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/jd2-pia.sh?nocache=$(date +%s)")"
 ```
+
+The `?nocache=$(date +%s)` busts GitHub's CDN cache (it can serve a stale copy for a few minutes after a push) — keep it when testing right after pushing a change.
 
 The host-side script copies `install/jd2-pia-install.sh` into the container and runs it from `/root`, so the installer is intentionally standalone and does not source repo-relative files from `lib/`.
 

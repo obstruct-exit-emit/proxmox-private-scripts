@@ -57,20 +57,20 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 Run from a Proxmox VE shell:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"
+bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh?nocache=$(date +%s)")"
 ```
 
-The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it.
+The bootstrap script downloads the shared library files plus the Decypharr app entrypoint into a temporary directory, then runs it. The `?nocache=$(date +%s)` query string busts GitHub's CDN cache, which can otherwise serve a stale copy for a few minutes after a push.
 
 ## Using JDownloader2 + PIA
 
 Run from a Proxmox VE shell:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/jd2-pia.sh)"
+bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/jd2-pia.sh?nocache=$(date +%s)")"
 ```
 
-The bootstrap script downloads the shared library files plus the JDownloader2 + PIA app entrypoint into a temporary directory, then runs it. See [apps/jd2-pia/README.md](apps/jd2-pia/README.md) for the post-install PIA login step and kill-switch caveats.
+The bootstrap script downloads the shared library files plus the JDownloader2 + PIA app entrypoint into a temporary directory, then runs it. The `?nocache=$(date +%s)` query string busts GitHub's CDN cache, which can otherwise serve a stale copy for a few minutes after a push. See [apps/jd2-pia/README.md](apps/jd2-pia/README.md) for the post-install PIA login step and kill-switch caveats.
 
 The host-side entrypoint may copy a single install script into the container, so every file under `apps/<app>/install/` must be self-contained and must not depend on repo-relative `lib/` paths being present inside the container.
 

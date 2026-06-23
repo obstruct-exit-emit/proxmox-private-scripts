@@ -161,7 +161,7 @@ IP=\$(wait_for_container_ipv4 "\${CTID}")
 [[ -z "\${IP}" ]] && msg_error "Container \${CTID} did not receive an IPv4 address after 60 s"
 msg_ok "Container running — IPv4: \${IP}"
 
-INSTALL_URL="https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/${APP}/install/${APP}-install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/${APP}/install/${APP}-install.sh?nocache=\$(date +%s)-\${RANDOM}"
 msg_info "Fetching install script"
 copy_script_into_container "\${CTID}" "\${INSTALL_URL}" "/root/${APP}-install.sh" \
   || msg_error "Failed to fetch ${APP}-install.sh"
@@ -282,7 +282,7 @@ fetch_file() {
   local relative_path="\$1"
   local destination="\$2"
   mkdir -p "\$(dirname "\${destination}")"
-  curl -fsSL "\${BASE_RAW}/\${relative_path}" -o "\${destination}"
+  curl -fsSL "\${BASE_RAW}/\${relative_path}?nocache=\$(date +%s)-\${RANDOM}" -o "\${destination}"
 }
 
 fetch_file "lib/output.sh" "\${WORKDIR}/lib/output.sh"

@@ -15,7 +15,7 @@ fetch_file() {
   local relative_path="$1"
   local destination="$2"
   mkdir -p "$(dirname "${destination}")"
-  curl -fsSL "${BASE_RAW}/${relative_path}" -o "${destination}"
+  curl -fsSL "${BASE_RAW}/${relative_path}?nocache=$(date +%s)-${RANDOM}" -o "${destination}"
 }
 
 fetch_file "lib/output.sh" "${WORKDIR}/lib/output.sh"

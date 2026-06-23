@@ -119,7 +119,7 @@ IP=$(wait_for_container_ipv4 "$CTID")
 [[ -z "$IP" ]] && msg_error "Container ${CTID} did not receive an IPv4 address after 60 s"
 msg_ok "Container running — IPv4: ${IP}"
 
-INSTALL_URL="https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/decypharr/install/decypharr-install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/apps/decypharr/install/decypharr-install.sh?nocache=$(date +%s)-${RANDOM}"
 msg_info "Fetching install script"
 copy_script_into_container "$CTID" "$INSTALL_URL" "/root/decypharr-install.sh" \
   || msg_error "Failed to fetch decypharr-install.sh"
