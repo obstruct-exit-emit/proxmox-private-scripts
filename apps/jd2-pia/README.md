@@ -33,6 +33,8 @@ jd2-setup.sh
 
 `jd2-setup.sh` stops the background `jdownloader2.service`, runs JDownloader2 attached to your console, and relaunches it automatically while it self-updates (this can take a few cycles) until it shows the MyJDownloader login prompt. Log in there, then press `Ctrl+C` once it's running normally — the script hands control back to the systemd-managed background service. The account binding is saved under `/opt/jdownloader2/cfg/` and persists across restarts, so this is a one-time step. JDownloader2 can't prompt for this on its own since the background service has no attached console.
 
+To use JDownloader2's built-in Reconnect feature (Settings → Reconnect, a separate category from General — pick the *Custom/Script* method), point it at `/usr/local/bin/pia-reconnect.sh`. It restarts `pia-wireguard.service`, forcing a fresh PIA connection. Since `AUTOCONNECT=true` picks the lowest-latency server each time, this often — but not always — lands on a different exit IP; ask if you want it changed to pick a random region instead for more reliable IP diversity.
+
 ## How the kill switch works
 
 `manual-connections` doesn't ship kill switch rules itself, so this app adds its own via `/usr/local/bin/pia-connect.sh` (run by `pia-wireguard.service` on every boot):
