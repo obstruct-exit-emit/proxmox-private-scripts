@@ -13,22 +13,15 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 │   │   │   └── decypharr.sh
 │   │   └── install/
 │   │       └── decypharr-install.sh
-│   ├── jd2-pia/
-│   │   ├── README.md
-│   │   ├── ct/
-│   │   │   └── jd2-pia.sh
-│   │   └── install/
-│   │       └── jd2-pia-install.sh
-│   └── shelfmark/
+│   └── jd2-pia/
 │       ├── README.md
 │       ├── ct/
-│       │   └── shelfmark.sh
+│       │   └── jd2-pia.sh
 │       └── install/
-│           └── shelfmark-install.sh
+│           └── jd2-pia-install.sh
 ├── bootstrap/
 │   ├── decypharr.sh
-│   ├── jd2-pia.sh
-│   └── shelfmark.sh
+│   └── jd2-pia.sh
 ├── docs/
 │   ├── conventions.md
 │   └── structure.md
@@ -58,7 +51,6 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 
 - `decypharr`
 - `jd2-pia`
-- `shelfmark`
 
 ## Using Decypharr
 
@@ -79,16 +71,6 @@ bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/prox
 ```
 
 The bootstrap script downloads the shared library files plus the JDownloader2 + PIA app entrypoint into a temporary directory, then runs it. The `?nocache=$(date +%s)` query string busts GitHub's CDN cache, which can otherwise serve a stale copy for a few minutes after a push. See [apps/jd2-pia/README.md](apps/jd2-pia/README.md) for the post-install PIA login step and kill-switch caveats.
-
-## Using Shelfmark
-
-Run from a Proxmox VE shell:
-
-```bash
-bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/shelfmark.sh?nocache=$(date +%s)")"
-```
-
-Unlike the other two apps, this one installs Docker and builds the app from source (cloning `obstruct-exit-emit/shelfmark` and running `docker compose up -d --build`) rather than running a precompiled binary or pulling a prebuilt image — see [apps/shelfmark/README.md](apps/shelfmark/README.md) for why.
 
 The host-side entrypoint may copy a single install script into the container, so every file under `apps/<app>/install/` must be self-contained and must not depend on repo-relative `lib/` paths being present inside the container.
 
