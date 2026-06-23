@@ -102,10 +102,27 @@ source "$CRED_FILE"
 
 cd /opt/pia-manual-connections || { log "manual-connections directory missing"; exit 1; }
 
-if PIA_USER="$PIA_USER" PIA_PASS="$PIA_PASS" VPN_PROTOCOL=wireguard DISABLE_IPV6=yes \
-   AUTOCONNECT=true PIA_PF=false PIA_DNS=true \
-   ./run_setup.sh >> "$LOG" 2>&1 \
-   && ip link show pia >/dev/null 2>&1; then
+# network-online.target can fire before DNS/routing is actually usable on boot
+# (common LXC/DHCP race) — wait for real reachability before attempting to connect.
+for i in $(seq 1 15); do
+  getent hosts www.privateinternetaccess.com >/dev/null 2>&1 && break
+  sleep 2
+done
+
+CONNECTED=0
+for attempt in 1 2 3; do
+  if PIA_USER="$PIA_USER" PIA_PASS="$PIA_PASS" VPN_PROTOCOL=wireguard DISABLE_IPV6=yes \
+     AUTOCONNECT=true PIA_PF=false PIA_DNS=true \
+     ./run_setup.sh >> "$LOG" 2>&1 \
+     && ip link show pia >/dev/null 2>&1; then
+    CONNECTED=1
+    break
+  fi
+  log "Connection attempt ${attempt} failed, retrying in 5s"
+  sleep 5
+done
+
+if [[ "$CONNECTED" -eq 1 ]]; then
   FWMARK=$(wg show pia fwmark 2>/dev/null)
   # The wg kernel module's own encrypted UDP transport must keep using the real
   # default route (eth0) to actually reach the PIA server — only traffic NOT
@@ -184,12 +201,16 @@ cat <<EOF >/etc/systemd/system/pia-wireguard.service
 Description=PIA WireGuard tunnel + kill switch
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=8
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/local/bin/pia-connect.sh
 ExecStop=/usr/local/bin/pia-disconnect.sh
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
