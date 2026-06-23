@@ -17,6 +17,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 
 The host-side script copies `install/decypharr-install.sh` into the container and runs it from `/root`, so the installer is intentionally standalone and does not source repo-relative files from `lib/`.
 
+The container's console (`pct console <CTID>`) is configured to auto-login as root, so no password is needed there either; `pct enter <CTID>` already bypasses login entirely.
+
 ## Defaults
 
 | Setting | Default |

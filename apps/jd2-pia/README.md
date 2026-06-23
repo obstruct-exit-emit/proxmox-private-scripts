@@ -17,6 +17,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxm
 
 The host-side script copies `install/jd2-pia-install.sh` into the container and runs it from `/root`, so the installer is intentionally standalone and does not source repo-relative files from `lib/`.
 
+The container's console (`pct console <CTID>`) is configured to auto-login as root, so no password is needed there either; `pct enter <CTID>` already bypasses login entirely.
+
 PIA credentials are never passed to the installer or baked into the image. Once the container is up, finish setup manually:
 
 ```bash

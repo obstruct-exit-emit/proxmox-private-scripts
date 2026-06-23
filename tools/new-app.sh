@@ -168,6 +168,7 @@ copy_script_into_container "\${CTID}" "\${INSTALL_URL}" "/root/${APP}-install.sh
 msg_ok "Fetched install script"
 
 ensure_locale_profile "\${CTID}"
+enable_console_autologin "\${CTID}"
 
 msg_info "Installing \${APP} inside container \${CTID}"
 run_script_in_container "\${CTID}" "/root/${APP}-install.sh" \

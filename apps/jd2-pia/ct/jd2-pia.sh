@@ -79,6 +79,7 @@ copy_script_into_container "${CTID}" "${INSTALL_URL}" "/root/jd2-pia-install.sh"
 msg_ok "Fetched install script"
 
 ensure_locale_profile "${CTID}"
+enable_console_autologin "${CTID}"
 
 msg_info "Installing ${APP} inside container ${CTID}"
 run_script_in_container "${CTID}" "/root/jd2-pia-install.sh"   || msg_error "Installation failed — check /root/.install-jd2-pia.log inside the container"
