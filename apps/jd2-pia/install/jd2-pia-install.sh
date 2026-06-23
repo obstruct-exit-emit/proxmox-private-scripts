@@ -271,6 +271,7 @@ echo "Stopping the background JDownloader2 service so we can run it attached to 
 systemctl stop jdownloader2.service
 
 cd /opt/jdownloader2 || exit 1
+export HOME=/opt/jdownloader2
 echo
 echo "Starting JDownloader2 in the foreground."
 echo "It may exit and relaunch a few times while it self-updates before showing the MyJDownloader login prompt — that's normal, just wait."
