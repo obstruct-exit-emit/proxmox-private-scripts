@@ -72,7 +72,11 @@ CRED_FILE="/etc/pia/credentials.env"
 LOG="/var/log/pia-connect.log"
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG"; }
 
+ROUTE_TABLE=51820
+RULE_PRIORITY=100
+
 lockdown() {
+  local fwmark="$1"
   iptables -F
   iptables -P INPUT DROP
   iptables -P OUTPUT DROP
@@ -83,6 +87,9 @@ lockdown() {
   iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
   iptables -A INPUT -i pia -j ACCEPT
   iptables -A OUTPUT -o pia -j ACCEPT
+  if [[ -n "$fwmark" && "$fwmark" != "off" ]]; then
+    iptables -A OUTPUT -m mark --mark "$fwmark" -j ACCEPT
+  fi
 }
 
 if [[ ! -f "$CRED_FILE" ]]; then
@@ -99,14 +106,25 @@ if PIA_USER="$PIA_USER" PIA_PASS="$PIA_PASS" VPN_PROTOCOL=wireguard DISABLE_IPV6
    AUTOCONNECT=true PIA_PF=false PIA_DNS=true \
    ./run_setup.sh >> "$LOG" 2>&1 \
    && ip link show pia >/dev/null 2>&1; then
-  ip route replace default dev pia
+  FWMARK=$(wg show pia fwmark 2>/dev/null)
+  # The wg kernel module's own encrypted UDP transport must keep using the real
+  # default route (eth0) to actually reach the PIA server — only traffic NOT
+  # carrying that fwmark gets pushed through a separate table pointed at pia.
+  # This mirrors wg-quick's own full-tunnel routing technique.
+  ip route replace default dev pia table "$ROUTE_TABLE"
+  ip rule del priority "$RULE_PRIORITY" 2>/dev/null || true
+  if [[ -n "$FWMARK" && "$FWMARK" != "off" ]]; then
+    ip rule add not fwmark "$FWMARK" table "$ROUTE_TABLE" priority "$RULE_PRIORITY"
+  else
+    ip rule add table "$ROUTE_TABLE" priority "$RULE_PRIORITY"
+  fi
   printf '%s\n' "nameserver 1.1.1.1" "nameserver 8.8.8.8" >/etc/resolv.conf
-  lockdown
-  log "Connected, routed all traffic via pia, and locked down"
+  lockdown "$FWMARK"
+  log "Connected, routed normal traffic via pia (table $ROUTE_TABLE, fwmark $FWMARK kept on eth0), and locked down"
   exit 0
 else
   log "Connection attempt failed — applying fail-closed lockdown"
-  lockdown
+  lockdown ""
   exit 1
 fi
 SCRIPT
@@ -120,6 +138,9 @@ iptables -P INPUT ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -F
+
+ip rule del priority 100 2>/dev/null || true
+ip route flush table 51820 2>/dev/null || true
 
 if ip link show pia >/dev/null 2>&1; then
   ip link set pia down 2>/dev/null || true
