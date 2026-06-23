@@ -129,6 +129,12 @@ done
 
 if [[ "$CONNECTED" -eq 1 ]]; then
   FWMARK=$(wg show pia fwmark 2>/dev/null)
+  # Lower the tunnel MTU to avoid PMTU blackholing: the default WireGuard MTU
+  # assumes a full 1500-byte path, which the LXC veth/bridge path often can't
+  # carry. Oversized packets then get silently dropped (ICMP "frag needed" is
+  # commonly blocked) instead of triggering a retry — large transfers stall
+  # partway through while small requests (DNS, API calls) keep working fine.
+  ip link set mtu 1280 dev pia
   # The wg kernel module's own encrypted UDP transport must keep using the real
   # default route (eth0) to actually reach the PIA server — only traffic NOT
   # carrying that fwmark gets pushed through a separate table pointed at pia.
