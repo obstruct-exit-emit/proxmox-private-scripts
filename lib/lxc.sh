@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 find_storage_pools() {
-  TEMPLATE_STORAGE=$(pvesm status -content vztmpl 2>/dev/null | awk 'NR>1{print $1; exit}')
-  CONTAINER_STORAGE=$(pvesm status -content rootdir 2>/dev/null | awk 'NR>1{print $1; exit}')
+  TEMPLATE_STORAGE=$(pvesm status -content vztmpl 2>/dev/null | awk 'NR>1{print $1; exit}') || true
+  CONTAINER_STORAGE=$(pvesm status -content rootdir 2>/dev/null | awk 'NR>1{print $1; exit}') || true
   [[ -z "$TEMPLATE_STORAGE" ]] && msg_error "No storage with 'vztmpl' content type found"
   [[ -z "$CONTAINER_STORAGE" ]] && msg_error "No storage with 'rootdir' content type found"
 }
@@ -14,7 +14,7 @@ find_latest_template() {
   pveam available --section system 2>/dev/null \
     | awk -v os="$os" -v ver="$version" -v arch="$arch" \
         '$2 ~ os"-"ver"-" && $2 ~ "_"arch"." {print $2}' \
-    | sort -V | tail -1
+    | sort -V | tail -1 || true
 }
 
 download_template_if_missing() {
@@ -29,7 +29,7 @@ download_template_if_missing() {
 }
 
 next_ctid() {
-  pvesh get /cluster/nextid 2>/dev/null
+  pvesh get /cluster/nextid 2>/dev/null || true
 }
 
 create_lxc() {

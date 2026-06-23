@@ -7,6 +7,7 @@ Host-side scripts should:
 - source shared helpers from `lib/`
 - define only app metadata and app-specific behavior where possible
 - keep Proxmox/LXC boilerplate in shared helpers
+- NOT use `set -e`/`set -euo pipefail` — error handling here is explicit (`[[ -z "$VAR" ]] && msg_error "..."` after each lib call), and `set -e` can abort the script with zero output the moment any command in a pipeline/substitution returns non-zero for a reason that isn't a real failure, before that explicit check is ever reached
 
 ## In-container installers
 

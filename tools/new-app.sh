@@ -93,8 +93,6 @@ cat >"${APP_DIR}/ct/${APP}.sh" <<EOF
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/${UPSTREAM_REPO}
 
-set -euo pipefail
-
 APP="${APP_TITLE}"
 APP_SLUG="${APP}"
 APP_PORT="${APP_PORT}"
