@@ -35,6 +35,8 @@ jd2-setup.sh
 
 To use JDownloader2's built-in Reconnect feature (Settings → Reconnect, a separate category from General — pick the *Custom/Script* method), point it at `/usr/local/bin/pia-reconnect.sh`. It restarts `pia-wireguard.service`, forcing a fresh PIA connection. Since `AUTOCONNECT=true` picks the lowest-latency server each time, this often — but not always — lands on a different exit IP; ask if you want it changed to pick a random region instead for more reliable IP diversity.
 
+The **Event Scripter** and **Scheduler** extensions are pre-enabled at install time by seeding `cfg/org.jdownloader.extensions.eventscripter.EventScripterExtension.json` and `cfg/org.jdownloader.extensions.schedule.ScheduleExtension.json` (each `{"enabled": true}`) under `/opt/jdownloader2/` before JDownloader2 ever starts — both are disabled by default otherwise, which is why they don't show up in Settings until enabled (same reason Reconnect's settings category was hidden). They should already be visible in their respective Settings categories.
+
 ## How the kill switch works
 
 `manual-connections` doesn't ship kill switch rules itself, so this app adds its own via `/usr/local/bin/pia-connect.sh` (run by `pia-wireguard.service` on every boot):

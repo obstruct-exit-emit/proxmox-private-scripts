@@ -45,10 +45,15 @@ apt-get install -y -qq \
 msg_ok "Installed dependencies"
 
 msg_info "Downloading JDownloader2"
-mkdir -p /opt/jdownloader2/{config,downloads}
+mkdir -p /opt/jdownloader2/{config,downloads,cfg}
 curl -fsSL "http://installer.jdownloader.org/JDownloader.jar" -o /opt/jdownloader2/JDownloader.jar \
   >> "$INSTALL_LOG" 2>&1 || msg_error "Failed to download JDownloader2"
 msg_ok "Downloaded JDownloader2"
+
+msg_info "Pre-enabling Event Scripter and Scheduler extensions"
+printf '%s\n' '{"enabled": true}' >/opt/jdownloader2/cfg/org.jdownloader.extensions.eventscripter.EventScripterExtension.json
+printf '%s\n' '{"enabled": true}' >/opt/jdownloader2/cfg/org.jdownloader.extensions.schedule.ScheduleExtension.json
+msg_ok "Pre-enabled Event Scripter and Scheduler extensions"
 
 msg_info "Fetching PIA manual-connections scripts"
 mkdir -p /opt/pia-manual-connections
