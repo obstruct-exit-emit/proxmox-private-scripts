@@ -282,7 +282,7 @@ STOP=0
 trap 'STOP=1' INT
 
 while [[ "$STOP" -eq 0 ]]; do
-  java -Djava.awt.headless=true -jar JDownloader.jar -norestart
+  java -Djava.awt.headless=true -jar JDownloader.jar
   [[ "$STOP" -eq 1 ]] && break
   echo "JDownloader2 exited — relaunching in 3s (press Ctrl+C now if you're already done)..."
   sleep 3
