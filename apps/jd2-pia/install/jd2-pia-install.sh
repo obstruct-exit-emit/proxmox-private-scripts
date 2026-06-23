@@ -99,8 +99,10 @@ if PIA_USER="$PIA_USER" PIA_PASS="$PIA_PASS" VPN_PROTOCOL=wireguard DISABLE_IPV6
    AUTOCONNECT=true PIA_PF=false PIA_DNS=true \
    ./run_setup.sh >> "$LOG" 2>&1 \
    && ip link show pia >/dev/null 2>&1; then
+  ip route replace default dev pia
+  printf '%s\n' "nameserver 1.1.1.1" "nameserver 8.8.8.8" >/etc/resolv.conf
   lockdown
-  log "Connected and locked down via pia interface"
+  log "Connected, routed all traffic via pia, and locked down"
   exit 0
 else
   log "Connection attempt failed — applying fail-closed lockdown"
@@ -123,6 +125,9 @@ if ip link show pia >/dev/null 2>&1; then
   ip link set pia down 2>/dev/null || true
   ip link delete pia 2>/dev/null || true
 fi
+
+dhclient -r eth0 2>/dev/null || true
+dhclient eth0 2>/dev/null || true
 SCRIPT
 chmod +x /usr/local/bin/pia-disconnect.sh
 

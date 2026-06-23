@@ -35,8 +35,9 @@ pia-setup.sh
 `manual-connections` doesn't ship kill switch rules itself, so this app adds its own via `/usr/local/bin/pia-connect.sh` (run by `pia-wireguard.service` on every boot):
 
 1. If `/etc/pia/credentials.env` doesn't exist yet, it's a no-op and leaves the network open — this is the state before you've ever run `pia-setup.sh`.
-2. Otherwise it brings the tunnel up over the container's normal, unrestricted network (needed to authenticate against PIA), then locks down with iptables (`DROP` on INPUT/OUTPUT/FORWARD except loopback, established/related, and the `pia` interface) only once the tunnel is confirmed live.
+2. Otherwise it brings the tunnel up over the container's normal, unrestricted network (needed to authenticate against PIA). `manual-connections` only creates the `pia` interface — it deliberately doesn't touch routing or DNS (per its own README) — so once the tunnel is live, `pia-connect.sh` explicitly replaces the default route with `ip route replace default dev pia` and points `/etc/resolv.conf` at public resolvers reachable through the tunnel (`1.1.1.1`/`8.8.8.8`), since the original DHCP-provided DNS server is only reachable via `eth0`, which the kill switch blocks. Only after that does it lock down with iptables (`DROP` on INPUT/OUTPUT/FORWARD except loopback, established/related, and the `pia` interface).
 3. If a reconnect ever fails after credentials already exist, it fails closed (full lockdown) rather than leaking traffic on the real IP.
+4. `pia-disconnect.sh` (the service's `ExecStop`) tears down iptables and the `pia` interface, then triggers a DHCP renewal on `eth0` to restore normal routing/DNS.
 
 **Known limitations:**
 
