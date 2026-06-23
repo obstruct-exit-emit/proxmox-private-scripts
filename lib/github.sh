@@ -11,8 +11,7 @@ download_first_working_asset() {
   shift
   local url
   for url in "$@"; do
-    if curl -fsSLI --location "$url" >/dev/null 2>&1; then
-      curl -fsSL --location "$url" -o "$destination"
+    if curl -fsSL --location "$url" -o "$destination"; then
       return 0
     fi
   done

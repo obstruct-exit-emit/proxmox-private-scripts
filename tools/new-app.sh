@@ -42,8 +42,8 @@ if [[ "$UPDATE_SUPPORT" == "true" ]]; then
 printf '%s\\n' \\
   '#!/usr/bin/env bash' \\
   'bash -c "\\$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/${APP}.sh)"' \\
-  >/usr/bin/update
-chmod +x /usr/bin/update
+  >/usr/local/bin/${APP}-update
+chmod +x /usr/local/bin/${APP}-update
 msg_ok "Installed update helper"
 EOF
 )

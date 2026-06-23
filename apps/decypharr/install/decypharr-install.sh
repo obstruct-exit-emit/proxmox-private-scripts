@@ -30,8 +30,7 @@ download_first_working_asset() {
   shift
   local url
   for url in "$@"; do
-    if curl -fsSLI --location "$url" >/dev/null 2>&1; then
-      curl -fsSL --location "$url" -o "$destination"
+    if curl -fsSL --location "$url" -o "$destination"; then
       return 0
     fi
   done
@@ -147,8 +146,8 @@ msg_ok "Service enabled and started"
 printf '%s\n' \
   '#!/usr/bin/env bash' \
   'bash -c "$(curl -fsSL https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/decypharr.sh)"' \
-  >/usr/bin/update
-chmod +x /usr/bin/update
+  >/usr/local/bin/decypharr-update
+chmod +x /usr/local/bin/decypharr-update
 msg_ok "Installed update helper"
 
 msg_ok "Decypharr installation complete"
