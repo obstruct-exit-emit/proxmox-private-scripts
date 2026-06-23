@@ -22,11 +22,9 @@ ensure_locale_profile() {
 enable_console_autologin() {
   local ctid="$1"
   pct exec "$ctid" -- env LANG=C.UTF-8 LC_ALL=C.UTF-8 LANGUAGE= bash -c '
-    mkdir -p /etc/systemd/system/getty@tty1.service.d /etc/systemd/system/console-getty.service.d
-    printf "%s\n" "[Service]" "ExecStart=" "ExecStart=-/sbin/agetty --autologin root --noclear %I \$TERM" >/etc/systemd/system/getty@tty1.service.d/override.conf
-    printf "%s\n" "[Service]" "ExecStart=" "ExecStart=-/sbin/agetty --autologin root --noclear --keep-baud console 115200,38400,9600 \$TERM" >/etc/systemd/system/console-getty.service.d/override.conf
+    mkdir -p /etc/systemd/system/container-getty@1.service.d
+    printf "%s\n" "[Service]" "ExecStart=" "ExecStart=-/sbin/agetty --autologin root --noreset --noclear - \$TERM" >/etc/systemd/system/container-getty@1.service.d/override.conf
     systemctl daemon-reload
-    systemctl restart getty@tty1.service 2>/dev/null || true
-    systemctl restart console-getty.service 2>/dev/null || true
+    systemctl restart container-getty@1.service 2>/dev/null || true
   '
 }
