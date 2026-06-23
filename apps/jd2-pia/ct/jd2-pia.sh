@@ -4,8 +4,6 @@
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/pia-foss/manual-connections
 
-set -euo pipefail
-
 APP="JDownloader2 + PIA"
 APP_SLUG="jd2-pia"
 APP_INSTALL_SCRIPT="jd2-pia-install.sh"
