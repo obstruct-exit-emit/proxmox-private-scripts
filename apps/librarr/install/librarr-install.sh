@@ -100,8 +100,12 @@ mkdir -p /mnt/librarr/{ebooks,audiobooks,manga}
 msg_ok "Created data directories"
 
 msg_info "Writing default config"
-API_KEY=$(tr -dc 'a-f0-9' </dev/urandom | head -c 32)
-TORZNAB_API_KEY=$(tr -dc 'a-f0-9' </dev/urandom | head -c 32)
+# head -c 16 reads a bounded amount from /dev/urandom and exits on its own,
+# so od never gets SIGPIPE'd — unlike `tr ... </dev/urandom | head -c N`,
+# where head closing early kills tr with SIGPIPE (exit 141), which
+# `set -o pipefail` then treats as a hard failure.
+API_KEY=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')
+TORZNAB_API_KEY=$(head -c 16 /dev/urandom | od -An -tx1 | tr -d ' \n')
 
 cat <<EOF >/opt/librarr/librarr.env
 # Server
