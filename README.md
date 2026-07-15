@@ -19,16 +19,23 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 │   │   │   └── jd2-pia.sh
 │   │   └── install/
 │   │       └── jd2-pia-install.sh
-│   └── librarr/
+│   ├── librarr/
+│   │   ├── README.md
+│   │   ├── ct/
+│   │   │   └── librarr.sh
+│   │   └── install/
+│   │       └── librarr-install.sh
+│   └── librinode/
 │       ├── README.md
 │       ├── ct/
-│       │   └── librarr.sh
+│       │   └── librinode.sh
 │       └── install/
-│           └── librarr-install.sh
+│           └── librinode-install.sh
 ├── bootstrap/
 │   ├── decypharr.sh
 │   ├── jd2-pia.sh
-│   └── librarr.sh
+│   ├── librarr.sh
+│   └── librinode.sh
 ├── docs/
 │   ├── conventions.md
 │   └── structure.md
@@ -59,6 +66,7 @@ A private collection of Proxmox VE LXC installer scripts with a shared shell fra
 - `decypharr`
 - `jd2-pia`
 - `librarr`
+- `librinode`
 
 ## Using Decypharr
 
@@ -89,6 +97,16 @@ bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/prox
 ```
 
 The bootstrap script downloads the shared library files plus the Librarr app entrypoint into a temporary directory, then runs it. The `?nocache=$(date +%s)` query string busts GitHub's CDN cache, which can otherwise serve a stale copy for a few minutes after a push. Librarr is installed from the upstream release binary (a single static Go binary, no Docker, no runtime dependencies) — see [apps/librarr/README.md](apps/librarr/README.md) for first-run setup and configuration.
+
+## Using LibriNode
+
+Run from a Proxmox VE shell:
+
+```bash
+bash -c "$(curl -fsSL "https://raw.githubusercontent.com/obstruct-exit-emit/proxmox-private-scripts/main/bootstrap/librinode.sh?nocache=$(date +%s)")"
+```
+
+The bootstrap script downloads the shared library files plus the LibriNode app entrypoint into a temporary directory, then runs it. LibriNode is built from source (clones the git repo, compiles the Go binary with embedded React UI) since it has no binary releases yet — see [apps/librinode/README.md](apps/librinode/README.md) for first-run setup and the `update` command that pulls the latest git commit and rebuilds in place without losing data.
 
 The host-side entrypoint may copy a single install script into the container, so every file under `apps/<app>/install/` must be self-contained and must not depend on repo-relative `lib/` paths being present inside the container.
 
